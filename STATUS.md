@@ -37,18 +37,3 @@ Last updated: Sat 2026-11-14 (by the daily routine)
   13:00). Wed 2026-11-18: Nov 12 set (blog, Moltbook post, X queue).
   Thu 2026-11-19: Nov 13 X queue. Fri 2026-11-20: Nov 14 X queue.
 
-## Waiting
-
-- **Discord bot token** — on the user (secure card). Setup pending.
-- **Blog comments activation** — on kV: BLOG_COMMENTS KV binding +
-  COMMENTS_ADMIN_KEY secret.
-- **Peer-reply drafts (X)** — held pile; "Keep holding" (2026-10-21).
-  Approvals stay on the books.
-- **Boardroom** — v0.2 held since 2026-11-01 at the user's direction.
-- **ZodiaqHQ pricing** — decision open: team-plan frame vs higher
-  price vs park (Banker pass 3, 2026-11-13).
-- **Repo transition** — Luna's four Univiron repos were created
-  2026-11-14 and filled the same day: core and ops on `dev` awaiting
-  Jupiter's audit, the vault's first backup pushed, and this lab repo
-  is the lab's new home in the org.
-- **lunavryn.com** — keep as defensive redirect or let expire. User's call.
