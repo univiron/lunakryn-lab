@@ -1,0 +1,146 @@
+#!/usr/bin/env python3
+"""X API v2 CLI backed by the stored custom.x-api connector credential.
+
+Usage:
+  x me                 Verify auth, show the connected X user.
+  x post <text>        Post a tweet as the connected user.
+  x mytweets [limit]   List the connected user's recent tweets.
+  x set_profile_image <path>  Upload a new profile image (v1.1).
+  x set_banner <path>         Upload a new profile banner (v1.1).
+
+Auth goes through authd surrogates: only hsurr:* values leave this
+process, and only to api.x.com. Never prints raw credentials.
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+
+sys.path.insert(0, "/opt/hatch/skills/skill-creator/bin")
+import dynamic_credentials as dc
+
+CREDENTIAL = "custom.x-api"
+ALLOWED_HOSTS = ["api.x.com"]
+API = "https://api.x.com/2"
+
+
+def api_request(method: str, path: str, payload: dict | None = None,
+                params: dict | None = None) -> dict:
+    url = API + path
+    if params:
+        url += "?" + urllib.parse.urlencode(params)
+    data = None
+    headers: dict[str, str] = {}
+    if payload is not None:
+        data = json.dumps(payload).encode("utf-8")
+        headers["Content-Type"] = "application/json"
+    req = urllib.request.Request(url, data=data, headers=headers, method=method)
+    dc.add_surrogate_to_request(
+        req, CREDENTIAL, entry_name="access_token", allowed_hosts=ALLOWED_HOSTS
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=90) as resp:
+            return dc.read_json_response(resp)
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", "replace")
+        raise SystemExit(f"X API error {exc.code}: {body[:800]}")
+    except urllib.error.URLError as exc:
+        raise SystemExit(f"request failed: {exc.reason}")
+
+
+def api_form_post(url: str, fields: dict[str, str]) -> dict:
+    """POST form-encoded to a v1.1 endpoint (profile/banner updates)."""
+    data = urllib.parse.urlencode(fields).encode("utf-8")
+    req = urllib.request.Request(
+        url, data=data,
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        method="POST",
+    )
+    dc.add_surrogate_to_request(
+        req, CREDENTIAL, entry_name="access_token", allowed_hosts=ALLOWED_HOSTS
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=90) as resp:
+            return dc.read_json_response(resp)
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", "replace")
+        raise SystemExit(f"X API error {exc.code}: {body[:800]}")
+    except urllib.error.URLError as exc:
+        raise SystemExit(f"request failed: {exc.reason}")
+
+
+def cmd_set_profile_image(path: str) -> None:
+    import base64
+    raw = open(path, "rb").read()
+    if len(raw) > 700 * 1024:
+        raise SystemExit("image too large for X profile upload (700KB max)")
+    api_form_post("https://api.x.com/1.1/account/update_profile_image.json",
+                  {"image": base64.b64encode(raw).decode("ascii")})
+    print("profile image updated")
+
+
+def cmd_set_banner(path: str) -> None:
+    import base64
+    raw = open(path, "rb").read()
+    api_form_post("https://api.x.com/1.1/account/update_profile_banner.json",
+                  {"banner": base64.b64encode(raw).decode("ascii")})
+    print("banner updated")
+
+
+def cmd_me() -> None:
+    out = api_request("GET", "/users/me",
+                      params={"user.fields": "username,name"})
+    user = out.get("data", {})
+    print(f"@{user.get('username')} ({user.get('name')}) id={user.get('id')}")
+
+
+def cmd_post(text: str) -> None:
+    if not text.strip():
+        raise SystemExit("post text is empty")
+    if len(text) > 280:
+        raise SystemExit(f"post is {len(text)} chars; X limit is 280")
+    out = api_request("POST", "/tweets", payload={"text": text})
+    data = out.get("data", {})
+    print(f"posted id={data.get('id')}")
+    print(f"https://x.com/i/status/{data.get('id')}")
+
+
+def cmd_mytweets(limit: str = "5") -> None:
+    me = api_request("GET", "/users/me")
+    uid = me.get("data", {}).get("id")
+    out = api_request("GET", f"/users/{uid}/tweets",
+                      params={"max_results": limit,
+                              "tweet.fields": "created_at"})
+    for tw in out.get("data", []):
+        print(f"{tw.get('created_at')}  {tw.get('id')}\n  {tw.get('text')}\n")
+
+
+def main(argv: list[str]) -> None:
+    if not argv or argv[0] in ("-h", "--help", "help"):
+        print(__doc__.strip())
+        return
+    cmd, rest = argv[0], argv[1:]
+    if cmd == "me":
+        cmd_me()
+    elif cmd == "post":
+        cmd_post(" ".join(rest))
+    elif cmd == "mytweets":
+        cmd_mytweets(rest[0] if rest else "5")
+    elif cmd == "set_profile_image":
+        if not rest:
+            raise SystemExit("usage: x set_profile_image <path>")
+        cmd_set_profile_image(rest[0])
+    elif cmd == "set_banner":
+        if not rest:
+            raise SystemExit("usage: x set_banner <path>")
+        cmd_set_banner(rest[0])
+    else:
+        raise SystemExit(f"unknown command: {cmd}")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

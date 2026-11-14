@@ -1,0 +1,63 @@
+#!/bin/sh
+# pre-push guard — Luna's repos: every push to main must tick VERSION.
+# Blocks when: VERSION is missing at the pushed tip, VERSION is unchanged
+# vs the remote, the new version is invalid or not greater, or the major
+# changes (majors need user discussion + ceremony, never a script).
+# A newly introduced VERSION must be 0.x.y — nothing is 1.0 yet (user
+# rule, 2026-10-26). Tag-only pushes, branch deletions, and pushes to
+# branches other than main pass untouched.
+set -u
+
+fail() {
+  echo "pre-push guard: BLOCKED: $1" >&2
+  echo "  Run scripts/bump-version.sh minor|patch, commit VERSION, then push again." >&2
+  exit 1
+}
+
+semver_ok() {
+  case "$1" in *.*.*) ;; *) return 1 ;; esac
+  a=${1%%.*}; r=${1#*.}; b=${r%%.*}; c=${r#*.}
+  [ -n "$a" ] && [ -n "$b" ] && [ -n "$c" ] || return 1
+  case "$a$b$c" in *[!0-9]*) return 1 ;; esac
+  case "$c" in *.*) return 1 ;; esac
+  return 0
+}
+
+# returns 0 when $1 > $2
+semver_gt() {
+  a1=${1%%.*}; r1=${1#*.}; b1=${r1%%.*}; c1=${r1#*.}
+  a2=${2%%.*}; r2=${2#*.}; b2=${r2%%.*}; c2=${r2#*.}
+  [ "$a1" -gt "$a2" ] && return 0; [ "$a1" -lt "$a2" ] && return 1
+  [ "$b1" -gt "$b2" ] && return 0; [ "$b1" -lt "$b2" ] && return 1
+  [ "$c1" -gt "$c2" ] && return 0; return 1
+}
+
+major_of() { printf '%s' "${1%%.*}"; }
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  case "$remote_ref" in refs/heads/main) ;; *) continue ;; esac
+  case "$local_sha" in 0000000000000000000000000000000000000000) continue ;; esac
+
+  new=$(git show "$local_sha:VERSION" 2>/dev/null | tr -d ' \t\r\n' || true)
+  [ -n "$new" ] || fail "no VERSION file at the pushed tip ($local_ref)."
+  semver_ok "$new" || fail "VERSION '$new' is not valid X.Y.Z."
+
+  case "$remote_sha" in 0000000000000000000000000000000000000000)
+    # brand-new main: must start on the 0.x line
+    [ "$(major_of "$new")" = "0" ] || fail "new VERSION '$new' starts above 0.x — nothing is 1.0 yet."
+    continue
+    ;;
+  esac
+
+  old=$(git show "$remote_sha:VERSION" 2>/dev/null | tr -d ' \t\r\n' || true)
+  if [ -z "$old" ]; then
+    [ "$(major_of "$new")" = "0" ] || fail "new VERSION '$new' introduces a 1.x line — nothing is 1.0 yet."
+    continue
+  fi
+  semver_ok "$old" || fail "remote VERSION '$old' is malformed — fix it by hand, do not push over it."
+  if [ "$old" = "$new" ]; then fail "VERSION did not tick (still $old)."; fi
+  if [ "$(major_of "$new")" != "$(major_of "$old")" ]; then fail "major change $old -> $new — majors need ceremony, not a push."; fi
+  semver_gt "$new" "$old" || fail "VERSION $new is not greater than remote $old."
+done
+
+exit 0
