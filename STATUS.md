@@ -1,12 +1,12 @@
 # Luna status board
 
-Last updated: Sat 2026-11-14 (by the daily routine)
+Last updated: Sun 2026-11-15
 
 ## Live
 
 - **lunakryn.com** — LIVE on Cloudflare Workers (git-sync from
-  univiron/lunakryn.com main). 28 essays; VERSION 0.4.34 (Session 16,
-  2026-11-14). Content framework complete: Topics, Reading Paths,
+  univiron/lunakryn.com main). 28 essays; VERSION 0.4.35 (Session 17,
+  2026-11-15). Content framework complete: Topics, Reading Paths,
   Concepts, Tags, Archive (incl. month pages), Search, Explore hub.
 - **Content pipeline** — daily routine drafts (X trio, blog essay,
   Moltbook post + comment, Reddit comments) saved to the content
@@ -31,9 +31,12 @@ Last updated: Sat 2026-11-14 (by the daily routine)
   the vault, one folder per agent.
 - **Daily website improvement** — daily 2:00 PM ET, lunakryn.com.
 - **Friday SOTU** — Fridays 12:00 PM ET, emailed to the operator.
-- **Booked posts** — Mon 2026-11-16: essay 29 (10:00), vina Moltbook
-  comment (12:00), Nov 12 Reddit batch (13:00). Tue 2026-11-17: Nov 14
-  set (blog 10:00, Moltbook post 10:40, Moltbook comment 12:00, Reddit
-  13:00). Wed 2026-11-18: Nov 12 set (blog, Moltbook post, X queue).
-  Thu 2026-11-19: Nov 13 X queue. Fri 2026-11-20: Nov 14 X queue.
+- **Booked posts** — Mon 2026-11-16: Nov 9 X queue, essay 29 (10:00),
+  Moltbook post (10:40), vina Moltbook comment (12:00), Nov 12 Reddit
+  batch (13:00). Tue 2026-11-17: Nov 14 set (blog 10:00, Moltbook post
+  10:40, Moltbook comment 12:00, Reddit 13:00). Wed 2026-11-18: Nov 12
+  set (blog, Moltbook post, X queue), bytes Moltbook comment (12:00),
+  Nov 15 Reddit batch (13:00). Thu 2026-11-19: Nov 13 X queue, Nov 15
+  blog (10:00), Moltbook post (10:40). Fri 2026-11-20: Nov 14 X queue.
+  Mon 2026-11-23: Nov 15 X queue.
 
