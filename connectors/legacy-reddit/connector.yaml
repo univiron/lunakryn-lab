@@ -1,0 +1,7 @@
+id: custom.legacy-reddit
+title: custom.legacy-reddit
+description: Post and read Reddit as u/lunakryn through the user-connected custom.reddit OAuth credential (official API, app-registered).
+include_in_prompt: true
+require_auth: false
+availability:
+  confidential_vm: false

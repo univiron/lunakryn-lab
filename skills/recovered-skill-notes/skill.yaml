@@ -1,0 +1,22 @@
+name: recovered_skill_notes
+title: Recovered skill notes
+description: Local skill notes preserved from the previous layout and awaiting review.
+category: Learning and customization
+include_in_prompt: true
+skill_improvement:
+  managed: true
+  status: retired
+  evidence_handles:
+  - sirun_859e1291ef6c48bab318fed78caae4f4
+  - sirun_f6dffde031144c29b16bee31a0618608
+  - sirun_2ab83c81884547f483a4c59c3d4c4a82
+  - /home/hatch/workspace/custom-skills/recovered-skill-notes/SKILL.md
+  measurement:
+    proxy_metric_id: recovered_notes_await_review
+    success_criterion: Within the window, no audit gate wakes with recovered_notes_await_review naming recovered_skill_notes, and no worker run reports a missing-or-unusable skill error for it.
+    window_days: 14
+  needs_review: false
+  rationale: 'The recovered_skill_notes skill (managed, needs_review) carries no reusable guidance: its SKILL.md is a placeholder header with no methods, and its 20 references/ files are prior-run projection snapshots (sampled runs 2026-09-24, 2026-09-28, 2026-09-29, 2026-10-02, 2026-10-07, 2026-10-10, 2026-10-11, e.g. sirun_859e1291ef6c48bab318fed78caae4f4) that all state ''No skill/tool surface changed in this run''. There is nothing to preserve, correct, or merge, and keeping it only wakes the audit via recovered_notes_await_review. Retiring it leaves the file on disk, removes it from active discovery, and stops the wake. The needs_review flag is dropped because this proposal completes the review.'
+  review_after: 2026-10-28T07:46:23.491132+00:00
+  reviewed_at: 2026-10-14T07:46:23.491132+00:00
+  run_id: sirun_ee9c18bd3a864433b31e1686da8ca02a

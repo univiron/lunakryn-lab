@@ -1,0 +1,23 @@
+name: reader_sweep_before_retirement
+title: Sweep for Live Readers Before Retiring a Path
+description: Move, rename or retire a file tree or path only after finding, repointing and proving every live reader of the old path.
+category: Work and knowledge
+include_in_prompt: false
+skill_improvement:
+  managed: true
+  status: active
+  evidence_handles:
+  - message:assistant-msg-4f5aadf9-edc4-4508-a821-3c17c9c5e2d7
+  - message:assistant-msg-c6a8c259-2794-c1ee-9d19-30b88d668efe
+  - message:04616723-56fa-4f36-9adf-383d29fc3d07
+  - trash_id:20261108-164745-ade16a5cfcbe4bff9c703b982e0ba3c4
+  - /home/hatch/workspace/goals/canonical-obsidian-vault-merge/files/per-lab-vault-standard.md
+  measurement:
+    proxy_metric_id: missed_live_readers_after_retirement_per_operation
+    success_criterion: Across the window, every move, rename or retirement of a path other work reads reports a per-surface reader sweep and a verification re-run before removal, and no live reader is discovered still pointing at the old path after the retirement.
+    window_days: 30
+  needs_review: false
+  rationale: 'On 2026-11-08 the assistant first told the user that nothing live read the old ~/workspace/knowledge/ tree (message:assistant-msg-4f5aadf9-edc4-4508-a821-3c17c9c5e2d7), then corrected itself in the same turn (message:assistant-msg-c6a8c259-2794-c1ee-9d19-30b88d668efe): the check had been flooded by old tool output logs and stopped too early, and three live readers were still pointed at the old tree, namely the Friday SOTU cron education sources, the activity collector collect-activity.py which silently returned empty counts on a missing tree, and its schema doc. A test re-run proved the cost, because against the old path the collector missed both of that day''s vault native studies, and only after all three were repointed and verified did the user retire the tree to recoverable trash (trash_id:20261108-164745-ade16a5cfcbe4bff9c703b982e0ba3c4). Skill search for retirement and migration sweeps returned only forget, knowledge_organization, approved_scope_build_session_gate and version_guarded_scheduled_publish, none of which requires finding and proving readers before a path is removed, so the lesson currently lives only in a project standard doc that later sessions will not discover for other trees. This skill moves the check before the retirement, splits the search per surface so log floods cannot hide live configuration, and requires a canary re-run as proof, which is the step whose absence turned a correct merge into a near silent breakage of a weekly report. The other candidates in this window were rejected: the six terminal tool failures carry no detail or shared shape, the repeated handoff suppression hypotheses concern objective trigger policy rather than a reusable method, and the existing managed gates for scope, duplicate replies and version bumps were all observed working in this window.'
+  review_after: 2026-12-08T21:28:07.754878+00:00
+  reviewed_at: 2026-11-08T21:28:07.754878+00:00
+  run_id: sirun_e121478ff01c4756ab3310c65da56d98

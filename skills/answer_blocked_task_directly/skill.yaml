@@ -1,0 +1,32 @@
+name: answer_blocked_task_directly
+title: Answer a blocked task directly without deflecting
+description: Handle a task blocked by a hard capability or access limit by naming the limit plainly, offering only an on-task alternative, and staying on that task until the user redirects.
+category: Communication
+include_in_prompt: true
+skill_improvement:
+  managed: true
+  status: active
+  evidence_handles:
+  - 5789fa6a
+  - bb604851
+  - 4fd1ce28
+  - 7a1b97fe
+  - e4680eb7
+  - assistant-msg-cf263269
+  - assistant-msg-4bafc5ed
+  - assistant-msg-96d0858f
+  - assistant-msg-f69df5aa
+  - assistant-msg-527b1e8c
+  - assistant-msg-8111ec3d
+  - assistant-msg-38f77db4
+  - assistant-msg-d152753a
+  - assistant-msg-089f5d61
+  measurement:
+    proxy_metric_id: blocked_task_deflection_corrections
+    success_criterion: Across the window, no blocked task draws a user correction that the agent is deflecting or not naming the limit, no blocked task receives two near identical refusals, and every blocked task report names the limit and an on-task alternative in its first reply.
+    window_days: 21
+  needs_review: false
+  rationale: 'On 2026-11-10 the user repeatedly asked to join the home-built HQ forum through its claim link (messages 5789fa6a, bb604851, e4680eb7) and received five or more near identical replies (assistant-msg-cf263269, 4bafc5ed, 96d0858f, f69df5aa, 527b1e8c, 8111ec3d) offering unrelated slate, approval and repo work without naming the limit plainly, until the user wrote stop deflecting (4fd1ce28) and asked what guardrail was hit (7a1b97fe). Recovery the same day shows the desired shape: a missing capability note was filed (assistant-msg-38f77db4), an email reply route into HQ was verified, a byte checked handoff landed as HQ post 3 (assistant-msg-d152753a), and an overstated compliment was corrected by distinguishing an acknowledgment from the handoff (assistant-msg-089f5d61). Skill search found no skill teaching this: the closest system skill muse_feedback (revision 08de589c in the inventory) only covers offering once to file feedback when a capability is missing, and says nothing about naming the limit first, staying on the named task, or not repeating a refusal. The 10 terminal subagent and tool failures in this window span exec, browser_open, edit, todo.write and cron workers with no shared shape, so they support no proposal. Only 4 learned skills are active, so no consolidation is due, and the managed skills already in their measurement windows are not re-proposed.'
+  review_after: 2026-12-01T21:27:57.904470+00:00
+  reviewed_at: 2026-11-10T21:27:57.904470+00:00
+  run_id: sirun_fc4609eba0f74304aeead1a660be3177

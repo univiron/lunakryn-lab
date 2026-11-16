@@ -1,0 +1,21 @@
+name: team_reply_send_gate
+title: Gate every team reply on a live thread fetch
+description: Prevent a duplicate team email reply by fetching the live thread immediately before any send in any context and stopping when a reply already exists.
+category: Communication
+include_in_prompt: true
+skill_improvement:
+  managed: true
+  status: active
+  evidence_handles:
+  - memory/2026-10-25.md DE-DUP MISS entry
+  - memory/2026-10-23.md duplicate guard and replied-ids entries
+  - /opt/muse/skills/email-management/SKILL.md
+  measurement:
+    proxy_metric_id: duplicate_team_replies_per_team_send
+    success_criterion: Across the window, no duplicate team reply is sent in any context after a live thread fetch would have shown an existing covering reply, and every existing reply case is surfaced instead of sent as a second reply.
+    window_days: 21
+  needs_review: false
+  rationale: The October 24 failure happened in main chat, not in a triage run. The evening inbox check sent a reply at 18:01 ET as message 1a16feea2b4d4d7d, a service interruption lost its replied-ids append, and the 23:26 main chat check used replied-ids only with the thread not fetched, so the user directed 23:27 decision reply went out. A triage start sweep could only have logged the first reply after that duplicate, so the previous proposal is withdrawn. This skill changes the trigger, timing, and scope. It applies to every team send in inbox checks, main chat, and dashboard runners, and include_in_prompt true puts it in main chat where the October 23 cron body rule could not reach. It requires a live thread fetch immediately before sending, after drafting and after any approval or interruption, and it treats that fetch as authoritative over the log, so a log miss never authorizes a send. When the fetch shows an assistant reply covering the same inbound message, the send stops and the existing reply is surfaced for an explicit supersede decision, which covers the consonant same point case rather than only identical text. This differs from email-management, which requires reading the thread before drafting, and from the October 23 rule, which required a thread check in cron bodies but was bypassed in main chat by a log only check.
+  review_after: 2026-11-15T07:44:03.089085+00:00
+  reviewed_at: 2026-10-25T07:44:03.089085+00:00
+  run_id: sirun_4cf487f39d744c709e13a33c02c1056e

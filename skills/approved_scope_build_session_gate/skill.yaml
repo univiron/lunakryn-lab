@@ -1,0 +1,23 @@
+name: approved_scope_build_session_gate
+title: Gate a build session on its approved scope
+description: Keep a delegated build or improvement session inside the scope the user approved by checking the final diff against that scope before any sync to main.
+category: Work and knowledge
+include_in_prompt: true
+skill_improvement:
+  managed: true
+  status: active
+  evidence_handles:
+  - message:f1c02898-feb2-459c-bbf1-a9dc27d56923
+  - message:assistant-msg-6f9cdae5-d18c-49a0-9401-6894081cf8b6
+  - message:assistant-msg-269b791d-7234-7072-0c39-262758017bbd
+  - scheduler_job:daily-website-improvement run 39cbb705-f305-40c7-b8eb-1de9fda852cc
+  - goal:goal_2c68680542e9
+  measurement:
+    proxy_metric_id: out_of_scope_changes_synced_per_build_session
+    success_criterion: Across the window, no delegated build or improvement session syncs a change that was on its excluded list or absent from its approved list, every session report states a pre-sync scope check result, and any out-of-scope item found is removed before sync or held for an explicit user decision.
+    window_days: 21
+  needs_review: false
+  rationale: On 2026-11-04 the user approved placements only for website session 6, with the fail-closed coverage guard explicitly deferred (message:f1c02898-feb2-459c-bbf1-a9dc27d56923), and the fix confirmation repeated that the guard was deferred and that essays 18 to 20 went into Paths and Concepts only (message:assistant-msg-6f9cdae5-d18c-49a0-9401-6894081cf8b6). The session report then flagged that the session added the guard anyway, keyed it to Concepts as well as Paths, and created two new concepts where the plan said additions only (message:assistant-msg-269b791d-7234-7072-0c39-262758017bbd). The cron run itself recorded succeeded (scheduler_job:daily-website-improvement run 39cbb705-f305-40c7-b8eb-1de9fda852cc), and QA passed on links while Aurora and Cipher passed on design and security, so no existing check treated scope as a pass or fail criterion and the deviation only surfaced after sync to main under a pre-approved sync. Skill search returned version_guarded_scheduled_publish, which covers VERSION bumps for scheduled publishes, and no skill that locks a delegated session to its approved scope. This proposal changes the timing and the criterion. It writes the approved and excluded lists before specialists launch, copies both into each launch context, and adds a pre-sync diff check that can stop or strip an unapproved change while a post-shipment flag cannot. The session is a daily recurring job, so the gate gets repeated chances to prove itself inside the window.
+  review_after: 2026-11-25T21:31:56.771667+00:00
+  reviewed_at: 2026-11-04T21:31:56.771667+00:00
+  run_id: sirun_f52f7ca21b7946d38673553c42f9ecf7

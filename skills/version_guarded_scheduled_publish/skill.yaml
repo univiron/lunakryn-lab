@@ -1,0 +1,24 @@
+name: version_guarded_scheduled_publish
+title: Publish to a version guarded repo on schedule
+description: Schedule and verify a publish job that pushes to a version guarded repo without letting the pre-push guard block it.
+category: Creation
+include_in_prompt: true
+skill_improvement:
+  managed: true
+  status: active
+  evidence_handles:
+  - message:assistant-msg-0fd80b26-5b54-4968-aeb9-51987a4f1bca
+  - message:assistant-msg-f8b3afda-f0c7-aa10-812b-4588d40e27e9
+  - message:assistant-msg-5a457c70-99fa-4a93-91c6-04e91ae6be9
+  - message:assistant-msg-833afb57-b2f6-0b2e-d910-39f705d4daa0
+  - scheduler_job:publish-2026-10-29-forgotten-agent run a39b6d7d-d311-4d05-8f9e-ee95efc14032
+  - /home/hatch/workspace/versioning/approach.md
+  measurement:
+    proxy_metric_id: version_guard_blocked_scheduled_publishes
+    success_criterion: Across the window, no scheduled publish job to a version guarded repo fails at push for an unchanged VERSION, and no booked publish job needs a post-booking patch fix before its fire time. Every new publish job definition is verified by read-back to include the bump step and VERSION before firing.
+    window_days: 21
+  needs_review: false
+  rationale: 'The 2026-10-29 publish job for the Forgotten Agent essay was booked without a VERSION tick even though the same guard had already stranded essay 15, and the missing bump was flagged before the deadline, fixed by a user-approved job update verified by read-back, and then pushed first try as VERSION 0.4.5 to 0.4.6 in commit 5f26a3b with tag v0.4.6. A scheduled push that fails does not retry, so catching the omission at authoring time matters more than catching it before the deadline. No existing skill covers this guard check: skill_search for version guard publishing returned only social_publishing and unrelated skills. The deterministic repeated-handoff-suppression candidates were rejected because they concern objective idle behavior and system trigger policy, which this loop does not change, and the 16 terminal tool failures share no shape or detail that would support a skill. This single skill moves the bump, the VERSION commit, the tag, and the pre-fire read-back into the job definition itself, scoped to Luna repos only with no major or 1.x path.'
+  review_after: 2026-11-19T21:29:42.987704+00:00
+  reviewed_at: 2026-10-29T21:29:42.987704+00:00
+  run_id: sirun_5b0e8c00283c4d259e96db43beea8052
